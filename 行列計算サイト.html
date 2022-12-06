@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="行列計算サイト.css">
+        <noscript>javascriptを読み込めませんでした。</noscript>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <title>行列計算サイト</title>
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-logo">行列計算サイト</div>
+        </header>
+        <div id=main>
+            <table id=InputTable>
+                <td>
+                    <div class=divA>
+                        <table class="ButtonTableA" border="1">
+                            <tr>
+                                <td colspan="4">
+                                <!--widthは合計が親の{100-("ボタン数")}％未満になるようにする-->
+                                <input type="button" style="width:23%;" class="button" value="+(行)" onclick="addRow(matInfoA,'A')">
+                                <input type="button" style="width:23%;" class="button" value="-(行)" onclick="removeRow(matInfoA,'A')">
+                                <input type="button" style="width:23%;" class="button" value="+(列)" onclick="addColumn(matInfoA,'A')">
+                                <input type="button" style="width:23%;" class="button" value="-(列)" onclick="removeColumn(matInfoA,'A')">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><input type="button" style="width:48%;" class="button" class="identity" value="単位行列" onclick="setIdentity(matInfoA,'A')">
+                                <input type="button" style="width:48%;"class="button" value="連番" onclick="setNumber(matInfoA,'A')">
+                            </tr>
+                            <tr>
+                                <td colspan="4"><input type="button" class="button" value="転置行列" onclick="outputMat(transpose(matInfoA.matA()))">
+                                <input type="button" class="button" value="行列式A" onclick="outputDet(determinant(matInfoA.matA(),'A'))">
+                                <input type="button" class="button" value="余因子行列" onclick="adjugateMat(matInfoA.matA(),'A')"></td>
+                            </tr>
+                        </table>
+                        <div class="SpaceA"></div>
+                        <div class="MatNameA">行列A</div>
+                        <table class="InputTableA" border="1">
+                        </table>
+                    </div>
+                </td>
+                <td class="Space"></td>
+                <td>
+                    <div class=divB>
+                        <table class="ButtonTableB" border="1">
+                            <tr>
+                                <td colspan="4">
+                                <!--widthは合計が親の{100-("ボタン数")}％未満になるようにする-->
+                                <input type="button" style="width:23%;" class="button" value="+(行)" onclick="addRow(matInfoB,'B')">
+                                <input type="button" style="width:23%;" class="button" value="-(行)" onclick="removeRow(matInfoB,'B')">
+                                <input type="button" style="width:23%;" class="button" value="+(列)" onclick="addColumn(matInfoB,'B')">
+                                <input type="button" style="width:23%;" class="button" value="-(列)" onclick="removeColumn(matInfoB,'B')">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><input type="button" style="width:48%;" class="button" class="identity" value="単位行列" onclick="setIdentity(matInfoB,'B')">
+                                <input type="button" style="width:48%;"class="button" value="連番" onclick="setNumber(matInfoB,'B')">
+                            </tr>
+                            <tr>
+                                <td colspan="4"><input type="button" class="button" value="転置行列" onclick="outputMat(transpose(matInfoB.matB()))">
+                                <input type="button" class="button" value="行列式B" onclick="outputDet(determinant(matInfoB.matB(),'B'))">
+                                <input type="button" class="button" value="余因子行列" onclick="adjugateMat(matInfoB.matB(),'B')"></td>
+                            </tr>
+                        </table>
+                        <div class="MatNameB">行列B</div>
+                        <table class="InputTableB" border="1">
+                        </table>
+                    </div>
+                </td>
+            </table>
+                <table class="CommonButton">
+                    <tr>
+                        <td>
+                            <input type="button" class="button output" value="A+B" onclick="addMat(matInfoA.matA(),matInfoB.matB())">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="button output" value="A-B" onclick="subMat(matInfoA.matA(),matInfoB.matB())">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="button output" value="A×B" onclick="multiMat(matInfoA.matA(),matInfoB.matB())">
+                        </td>
+                    </tr>
+                </table>
+            <div class="OutputResult"></div>
+        <script>
+            
+            /*m×n行列をdivAの子ノードに動的に追加する関数*/
+            function setMat(m,n,X){
+                for (var i=1 ; i<=m ; i++)
+                {   
+                    var newTr = document.createElement("tr");
+                    newTr.className = "Tr" + i + X;
+                    var matPlace = document.getElementsByClassName("InputTable" + X)[0];
+                    matPlace.appendChild(newTr);
+                    var newTd = document.createElement("td");
+                    newTd.className = "Td" + i+ X;
+                     var newTrNode = document.getElementsByClassName("Tr" + i + X)[0];
+                    newTrNode.appendChild(newTd);
+                    for (var j=1 ; j<=n ; j++)
+                    {
+                        //テキストボックスの動的生成
+                        var newInput = document.createElement("input");
+                        //テキストボックスの詳細設定
+                        newInput.type = "text";
+                        newInput.className = "inputform" + i + j + X;
+                        newInput.size = "2";
+                        newInput.maxlength = "40";
+                        //div0配下にテキストボックスを生成
+                        var parent = document.getElementsByClassName("Td" + i + X)[0];
+                        parent.appendChild(newInput);
+                    }
+                }
+            }
+            
+            //サイトロード時にデフォルトで3×3マスの行列入力欄を表示
+            window.onload = setMat(3,3,"A");
+            window.onload = setMat(3,3,"B");
+        </script>
+        <script src="funcIndex.js"></script>
+    </body>
+</html>
